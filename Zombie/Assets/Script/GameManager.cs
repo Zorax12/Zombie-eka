@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class GameManager : MonoBehaviour
     private int selectedIndex = 0;
     public TMP_Text timerText;
     private float timer;
+    [SerializeField] GameObject gameOverScreen;
+    private bool isGameOver;
 
     void Start()
     {
@@ -19,6 +23,9 @@ public class GameManager : MonoBehaviour
         prev = InputSystem.actions.FindAction("PrevZombie");
         jump = InputSystem.actions.FindAction("Jump");
         SelectZombie(selectedIndex);
+        gameOverScreen.SetActive(false);
+        isGameOver = false;
+        Time.timeScale = 1f;
     }
 
     void SelectZombie(int index)
@@ -35,6 +42,9 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (isGameOver)
+            return;
+        
         if (next.WasPressedThisFrame())
         {
             Debug.Log("next");
@@ -62,5 +72,18 @@ public class GameManager : MonoBehaviour
         }
         timer += Time.deltaTime;
         timerText.text = "Time: " + timer.ToString("F1") + "s";
+    }
+
+    public void GameOver()
+    {
+        if (isGameOver)
+            return;
+        gameOverScreen.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
